@@ -1,0 +1,28 @@
+stream-mq:
+  #  enable: false
+  config:
+    consumer:
+      retryTimes: 3
+    queue:
+      maxSize: 10
+  queues:
+    queue1:
+      name: myTestQueue
+
+spring:
+  redis:
+    port: 6379
+    host: 127.0.0.1
+    database: 0
+
+logging:
+  level:
+    io:
+      netty:
+        channel:
+          DefaultChannelPipeline: off
+    org:
+      redisson:
+        client:
+          handler:
+            CommandDecoder: off

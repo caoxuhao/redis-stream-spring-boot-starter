@@ -1,0 +1,2 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.eric.middleware.streammq.spring.autoconfig.StreamMQAutoConfiguration
