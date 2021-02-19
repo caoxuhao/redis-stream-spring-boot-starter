@@ -10,6 +10,7 @@
         <module>StreammqSpringBootStarter</module>
         <module>StreammqTest</module>
         <module>StreamMQTest</module>
+        <module>MybatisRedisPlugin</module>
     </modules>
     <name>middleware-dependencies</name>
     <packaging>pom</packaging>
