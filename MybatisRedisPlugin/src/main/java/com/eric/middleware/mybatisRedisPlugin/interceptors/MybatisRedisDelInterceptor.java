@@ -4,6 +4,7 @@ import com.eric.middleware.mybatisRedisPlugin.annotation.RedisAdd;
 import com.eric.middleware.mybatisRedisPlugin.annotation.RedisDelete;
 import com.eric.middleware.mybatisRedisPlugin.bean.RedisDelPojo;
 import com.eric.middleware.mybatisRedisPlugin.bean.RedisMybatisCache;
+import com.eric.middleware.mybatisRedisPlugin.config.MybatisRedisPluginConfigManager;
 import com.eric.middleware.mybatisRedisPlugin.redis.RedisCtrl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.executor.Executor;
@@ -11,6 +12,7 @@ import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.plugin.*;
 import org.redisson.client.RedisClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.util.StringUtils;
 
@@ -25,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @Date: 2021/2/9 17:01
  */
 @Slf4j
+@AutoConfigureAfter(MybatisRedisPluginConfigManager.class)
 @ConditionalOnClass(RedisClient.class)
 @Intercepts(
     {
@@ -35,6 +38,9 @@ public class MybatisRedisDelInterceptor implements Interceptor {
     
     @Autowired(required = false)
     private RedisCtrl redisCtrl;
+
+    @Autowired
+    private MybatisRedisPluginConfigManager mybatisRedisPluginConfigManager;
 
     //@RedisDelete的标志位 长度超过一般的函数名长度就行
     private static final int REDIS_DELETE_FLAG = 256;
@@ -222,9 +228,6 @@ public class MybatisRedisDelInterceptor implements Interceptor {
 
     /**
      * 判断是否需要删除redis
-     * @param fullName
-     * @param pojo
-     * @return
      */
     private int shouldDeleteRedis(String fullName, RedisDelPojo pojo){
 
@@ -232,12 +235,14 @@ public class MybatisRedisDelInterceptor implements Interceptor {
         if(pojo != null)
             return REDIS_DELETE_FLAG;
 
-        //或者指定名称的sql
-        int index = fullName.indexOf("deleteByPrimaryKey");
-        if(index < 0)
-            index = fullName.indexOf("updateByPrimaryKey");
+        String functionName = fullName.substring(fullName.lastIndexOf(".") + 1);
 
-        return index;
+        //或者指定名称的sql
+        if(MybatisRedisPluginConfigManager.getDefaultDelFunctions().contains(functionName)){
+            return fullName.indexOf(functionName);
+        }
+
+        return -1;
     }
 
     /**

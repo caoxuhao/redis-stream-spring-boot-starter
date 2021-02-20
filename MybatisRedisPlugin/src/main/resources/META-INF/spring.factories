@@ -1,0 +1,3 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.eric.middleware.mybatisRedisPlugin.autoconfig.MybatisRedisAutoConfiguration,\
+com.eric.middleware.mybatisRedisPlugin.redis.RedisCtrl

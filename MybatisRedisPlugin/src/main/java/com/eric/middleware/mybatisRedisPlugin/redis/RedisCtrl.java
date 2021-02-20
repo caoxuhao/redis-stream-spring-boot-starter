@@ -2,9 +2,12 @@ package com.eric.middleware.mybatisRedisPlugin.redis;
 
 import org.redisson.api.RBucket;
 import org.redisson.api.RedissonClient;
+import org.redisson.client.RedisClient;
 import org.redisson.codec.JsonJacksonCodec;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 
 import java.util.concurrent.TimeUnit;
 
@@ -12,7 +15,8 @@ import java.util.concurrent.TimeUnit;
  * @author: caoxuhao
  * @Date: 2021/2/19 16:11
  */
-@ConditionalOnBean(RedissonClient.class)
+@AutoConfigureAfter(RedissonClient.class)
+@ConditionalOnClass(RedissonClient.class)
 public class RedisCtrl {
 
     @Autowired

@@ -1,0 +1,41 @@
+server:
+  port: 8071
+
+spring:
+  application:
+    name: mybatis-redis-plugin-test
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/traffic?serverTimezone=Asia/Shanghai&useUnicode=true@characterEncoding=UTF-8&autoReconnect=true&useSSL=FALSE&zeroDateTimeBehavior=convertToNull&allowPublicKeyRetrieval=true
+    username: ${MYSQL_USER:root}
+    password: Mysql@123
+    type: com.zaxxer.hikari.HikariDataSource
+    hikari:
+      minimum-idle: 8
+      maximum-pool-size: 100
+      auto-commit: false
+      idle-timeout: 30000
+      pool-name: financeHikariCP
+      max-lifetime: 1800000
+      connection-timeout: 30000
+      connection-test-query: SELECT 1
+  redis:
+    host: 10.251.186.44
+    #    host: 127.0.0.1
+    port: 6379
+    database: 1
+    password: 123456
+    ssl: false
+
+log:
+  path: logs
+
+mybatis:
+  mapperLocations: classpath:mybatis/*.xml
+#  redis:
+#    default-add-functions:
+#      - asd
+#      - ddfd
+#    default-del-functions:
+#      - sss
+#      - www

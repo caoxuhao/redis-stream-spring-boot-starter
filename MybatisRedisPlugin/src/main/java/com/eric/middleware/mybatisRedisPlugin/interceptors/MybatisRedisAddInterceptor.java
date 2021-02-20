@@ -3,6 +3,7 @@ package com.eric.middleware.mybatisRedisPlugin.interceptors;
 import com.eric.middleware.mybatisRedisPlugin.annotation.RedisAdd;
 import com.eric.middleware.mybatisRedisPlugin.bean.RedisAddPojo;
 import com.eric.middleware.mybatisRedisPlugin.bean.RedisMybatisCache;
+import com.eric.middleware.mybatisRedisPlugin.config.MybatisRedisPluginConfigManager;
 import com.eric.middleware.mybatisRedisPlugin.redis.RedisCtrl;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.ibatis.binding.MapperMethod;
@@ -16,6 +17,7 @@ import org.apache.ibatis.session.ResultHandler;
 import org.apache.ibatis.session.RowBounds;
 import org.redisson.client.RedisClient;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -34,6 +36,7 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @ConditionalOnClass(RedisClient.class)
+@AutoConfigureAfter(MybatisRedisPluginConfigManager.class)
 @Intercepts(
     {
         @Signature(type = Executor.class, method = "query", args = {MappedStatement.class, Object.class, RowBounds.class, ResultHandler.class}),
@@ -94,7 +97,8 @@ public class MybatisRedisAddInterceptor implements Interceptor {
             RedisAddPojo pojo = parseRedisAddAnnotation(ms);
 
             //有@RedisAdd 或函数名是selectByPrimaryKey的，都自动进行redis缓存处理
-            if(pojo != null || fullName.endsWith("selectByPrimaryKey")){
+            String functionName = fullName.substring(fullName.lastIndexOf(".") + 1);
+            if(pojo != null || MybatisRedisPluginConfigManager.getDefaultAddFunctions().contains(functionName)){
 
                 if(pojo != null && pojo.ignore){
                     //该方法需要忽略
@@ -149,7 +153,6 @@ public class MybatisRedisAddInterceptor implements Interceptor {
 
         return redisKeyPrefixName;
     }
-
 
     private RedisAddPojo parseRedisAddAnnotation(MappedStatement ms) throws ClassNotFoundException {
 
